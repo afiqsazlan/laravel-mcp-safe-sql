@@ -31,4 +31,9 @@ class NullAnonymizer implements Anonymizer
     {
         return $value;
     }
+
+    public function redactText(string $value): string
+    {
+        return $value;
+    }
 }

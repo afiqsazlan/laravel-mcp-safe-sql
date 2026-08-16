@@ -107,6 +107,26 @@ class PiiAnonymizer implements Anonymizer
     }
 
     /**
+     * Replace PII occurrences inside a string, preserving everything else.
+     *
+     * Only the value patterns apply here. Label-based rules cannot: free text
+     * has no column label, and the fail-closed default would replace the whole
+     * string, which is the opposite of what a readable log line needs.
+     */
+    public function redactText(string $value): string
+    {
+        foreach ($this->valuePatterns as $type => $pattern) {
+            $value = preg_replace_callback(
+                $pattern,
+                fn (array $matches): string => $this->token((string) $type, $matches[0]),
+                $value
+            ) ?? $value;
+        }
+
+        return $value;
+    }
+
+    /**
      * Reduce a result label to the column name it is most likely reporting on,
      * so that "MAX(created_at)" is recognised as safe and "MAX(email)" as PII.
      */

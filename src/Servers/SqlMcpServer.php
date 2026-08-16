@@ -8,6 +8,7 @@ use Afiqsazlan\SafeSql\Exceptions\UnknownProfileException;
 use Afiqsazlan\SafeSql\Profiles\Profile;
 use Afiqsazlan\SafeSql\Tools\DescribeTableTool;
 use Afiqsazlan\SafeSql\Tools\ExecuteSqlTool;
+use Afiqsazlan\SafeSql\Tools\TelescopeTool;
 use Laravel\Mcp\Server;
 
 /**
@@ -39,6 +40,7 @@ abstract class SqlMcpServer extends Server
     protected const TOOL_MAP = [
         'sql' => ExecuteSqlTool::class,
         'schema' => DescribeTableTool::class,
+        'telescope' => TelescopeTool::class,
     ];
 
     protected function boot(): void
