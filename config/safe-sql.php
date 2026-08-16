@@ -259,9 +259,14 @@ return [
 
     'schema' => [
         /*
-        | Tables the agent should be told about up front. No default — this is
-        | inherently application-specific. Leave empty to include every table
-        | that is not excluded below.
+        | Tables the agent should be told about up front, in full: columns,
+        | types, keys and foreign key targets. No default — which tables matter
+        | is inherently application-specific.
+        |
+        | Everything else is listed by name only, for the agent to inspect with
+        | describe-table when it needs to. Leaving this empty is therefore the
+        | cheap default rather than the expensive one: you get a table index
+        | instead of every column in the database.
         */
         'core_tables' => [],
 

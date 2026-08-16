@@ -6,6 +6,7 @@ namespace Afiqsazlan\SafeSql\Servers;
 
 use Afiqsazlan\SafeSql\Exceptions\UnknownProfileException;
 use Afiqsazlan\SafeSql\Profiles\Profile;
+use Afiqsazlan\SafeSql\Resources\DatabaseSchemaResource;
 use Afiqsazlan\SafeSql\Tools\DescribeTableTool;
 use Afiqsazlan\SafeSql\Tools\ExecuteSqlTool;
 use Afiqsazlan\SafeSql\Tools\TelescopeTool;
@@ -48,6 +49,13 @@ abstract class SqlMcpServer extends Server
         $profile = Profile::make($this->profile);
 
         $this->tools = $this->resolveTools($profile);
+
+        // The schema digest rides along with the schema tool. It is a resource
+        // rather than a tool because it is a document the client can read once,
+        // not an action.
+        if ($profile->exposes('schema')) {
+            $this->resources = [new DatabaseSchemaResource($profile)];
+        }
     }
 
     /**
