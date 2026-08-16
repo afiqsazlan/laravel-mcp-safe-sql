@@ -6,3 +6,6 @@ composer.lock
 .DS_Store
 .idea/
 .vscode/
+
+# Design brief — references internal systems, deliberately untracked
+safe-sql-mcp-build-plan.md
