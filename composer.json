@@ -1,0 +1,72 @@
+{
+    "name": "afiqsazlan/laravel-mcp-safe-sql",
+    "description": "Read-only, de-identified MCP access to your Laravel app's database — SELECT-only enforcement, auto-LIMIT, statement timeouts, fail-closed PII pseudonymization, and a context-cheap Telescope digest.",
+    "keywords": [
+        "laravel",
+        "mcp",
+        "sql",
+        "database",
+        "ai",
+        "agents",
+        "pii",
+        "anonymization",
+        "pseudonymization",
+        "telescope",
+        "read-only"
+    ],
+    "homepage": "https://github.com/afiqsazlan/laravel-mcp-safe-sql",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Afiq Sazlan",
+            "homepage": "https://github.com/afiqsazlan",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/contracts": "^12.0",
+        "illuminate/database": "^12.0",
+        "illuminate/support": "^12.0",
+        "laravel/mcp": "^0.9.3"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.18",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "phpstan/phpstan": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Afiqsazlan\\SafeSql\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Afiqsazlan\\SafeSql\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test:coverage": "vendor/bin/pest --coverage",
+        "lint": "vendor/bin/pint",
+        "lint:check": "vendor/bin/pint --test",
+        "analyse": "vendor/bin/phpstan analyse"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Afiqsazlan\\SafeSql\\SafeSqlServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
