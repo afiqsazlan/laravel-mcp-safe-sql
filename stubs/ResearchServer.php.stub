@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Mcp\Servers;
+
+use Afiqsazlan\SafeSql\Servers\SqlMcpServer;
+
+class ResearchServer extends SqlMcpServer
+{
+    protected string $name = 'Research';
+
+    protected string $version = '1.0.0';
+
+    /**
+     * Key under safe-sql.profiles. Everything else — connection,
+     * pseudonymization, tool set, instructions — is resolved from there.
+     */
+    protected string $profile = 'research';
+}

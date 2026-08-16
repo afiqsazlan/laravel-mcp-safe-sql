@@ -22,5 +22,13 @@ class SafeSqlServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/safe-sql.php' => config_path('safe-sql.php'),
         ], 'safe-sql-config');
+
+        $this->publishes([
+            __DIR__.'/../routes/safe-sql.php' => base_path('routes/safe-sql.php'),
+        ], 'safe-sql-routes');
+
+        $this->publishes([
+            __DIR__.'/../stubs/ResearchServer.php.stub' => app_path('Mcp/Servers/ResearchServer.php'),
+        ], 'safe-sql-server');
     }
 }
