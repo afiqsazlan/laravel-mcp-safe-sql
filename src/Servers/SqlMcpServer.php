@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Afiqsazlan\SafeSql\Servers;
 
 use Afiqsazlan\SafeSql\Exceptions\UnknownProfileException;
+use Afiqsazlan\SafeSql\Instructions\InstructionComposer;
 use Afiqsazlan\SafeSql\Profiles\Profile;
 use Afiqsazlan\SafeSql\Resources\DatabaseSchemaResource;
 use Afiqsazlan\SafeSql\Tools\DescribeTableTool;
@@ -56,6 +57,11 @@ abstract class SqlMcpServer extends Server
         if ($profile->exposes('schema')) {
             $this->resources = [new DatabaseSchemaResource($profile)];
         }
+
+        // Package instructions plus the application's, in that order. The
+        // pseudonymization rules in particular are a correctness fact, not
+        // documentation, so they must survive an application supplying its own.
+        $this->instructions = (new InstructionComposer)->compose($profile);
     }
 
     /**
