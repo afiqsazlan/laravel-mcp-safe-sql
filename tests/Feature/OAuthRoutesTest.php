@@ -43,8 +43,8 @@ describe('protected resource metadata', function () {
 });
 
 describe('published stubs', function () {
-    it('publishes the route file and server stub under their own tags', function () {
-        foreach (['safe-sql-config', 'safe-sql-routes', 'safe-sql-server'] as $tag) {
+    it('publishes the config and route file under their own tags', function () {
+        foreach (['safe-sql-config', 'safe-sql-routes'] as $tag) {
             expect(SafeSqlServiceProvider::pathsToPublish(
                 SafeSqlServiceProvider::class,
                 $tag

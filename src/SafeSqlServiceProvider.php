@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Afiqsazlan\SafeSql;
 
 use Afiqsazlan\SafeSql\Console\ClassifyColumnsCommand;
+use Afiqsazlan\SafeSql\Console\InstallCommand;
 use Illuminate\Support\ServiceProvider;
 
 class SafeSqlServiceProvider extends ServiceProvider
@@ -22,6 +23,7 @@ class SafeSqlServiceProvider extends ServiceProvider
 
         $this->commands([
             ClassifyColumnsCommand::class,
+            InstallCommand::class,
         ]);
 
         $this->publishes([
@@ -32,8 +34,5 @@ class SafeSqlServiceProvider extends ServiceProvider
             __DIR__.'/../routes/safe-sql.php' => base_path('routes/safe-sql.php'),
         ], 'safe-sql-routes');
 
-        $this->publishes([
-            __DIR__.'/../stubs/ResearchServer.php.stub' => app_path('Mcp/Servers/ResearchServer.php'),
-        ], 'safe-sql-server');
     }
 }

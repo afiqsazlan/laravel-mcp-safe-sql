@@ -33,8 +33,13 @@ under its own auth.
 
 ```bash
 composer require afiqsazlan/laravel-mcp-safe-sql
-php artisan vendor:publish --tag=safe-sql-config
+php artisan safe-sql:install
 ```
+
+`safe-sql:install` publishes the config, asks which connection the profile
+should read, records it in `.env`, and scaffolds the server class. Add
+`--routes` for the example route file. Everything it does is also doable by
+hand — see below.
 
 ## Quick start
 

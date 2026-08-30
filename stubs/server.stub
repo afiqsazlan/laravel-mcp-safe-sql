@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Afiqsazlan\SafeSql\Servers\SqlMcpServer;
+
+class {{ class }} extends SqlMcpServer
+{
+    protected string $name = '{{ name }}';
+
+    protected string $version = '1.0.0';
+
+    /**
+     * Key under safe-sql.profiles. Connection, pseudonymization, tool set and
+     * instructions are all resolved from there.
+     */
+    protected string $profile = '{{ profile }}';
+}
