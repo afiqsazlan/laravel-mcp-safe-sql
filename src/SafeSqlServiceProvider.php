@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Afiqsazlan\SafeSql;
 
+use Afiqsazlan\SafeSql\Console\ClassifyColumnsCommand;
 use Illuminate\Support\ServiceProvider;
 
 class SafeSqlServiceProvider extends ServiceProvider
@@ -18,6 +19,10 @@ class SafeSqlServiceProvider extends ServiceProvider
         if (! $this->app->runningInConsole()) {
             return;
         }
+
+        $this->commands([
+            ClassifyColumnsCommand::class,
+        ]);
 
         $this->publishes([
             __DIR__.'/../config/safe-sql.php' => config_path('safe-sql.php'),

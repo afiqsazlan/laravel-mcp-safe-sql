@@ -175,11 +175,29 @@ harmless ones:
 payment_method  'fpx'       →  [value:221a3546]
 ```
 
-The tool cannot tell `'fpx'` from a first name. Add such columns to
-`safe_columns` — `safe_column_patterns` already covers `*_at`, `*_id`,
-`is_*` and similar. Expect to spend your first hour classifying columns. The
-default errs toward tokenizing something readable rather than leaking
-something sensitive, and loosening it is a one-line config change.
+The tool cannot tell `'fpx'` from a first name. Rather than classify a mature
+schema by hand, generate a starting point:
+
+```bash
+php artisan safe-sql:classify --profile=research
+php artisan safe-sql:classify --profile=research --write=config/safe-sql-columns.php
+```
+
+It inspects every column, skips the ones you have already classified, and
+suggests the rest — reading a sample of real values to catch identifiers whose
+names give nothing away. Use `--no-sample` to classify from column names alone
+if the command must not read production rows; opaque columns then stay
+invisible, which is the trade.
+
+The command prints classifications, never data.
+
+Its most valuable output is the contradiction list: columns currently returned
+**raw** whose contents look like PII. `safe_column_patterns` passes anything
+ending in `_id`, and a column named `whatsapp_id` holding `60123456789` is a
+phone number that convention waves through.
+
+Everything it emits is a suggestion for you to review. Read `safe_columns`
+twice — every entry there is a decision to return real values.
 
 ## Telescope
 
