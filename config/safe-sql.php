@@ -59,7 +59,16 @@ return [
 
         'debug' => [
             'connection' => env('SAFE_SQL_DEBUG_CONNECTION'),
-            'anonymize' => false,
+
+            // Still true, even for a non-production endpoint. Staging is
+            // routinely seeded from a production dump, and Telescope is often
+            // enabled there precisely because that is where bugs reproduce —
+            // so "not production" is not the same as "not real people".
+            //
+            // Set this false only for a database whose contents you would be
+            // comfortable pasting into a public issue.
+            'anonymize' => true,
+
             'tools' => ['sql', 'schema', 'telescope'],
             'instructions' => null,
         ],

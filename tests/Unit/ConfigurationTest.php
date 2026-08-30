@@ -12,6 +12,13 @@ it('ships a research profile that anonymizes by default', function () {
     expect(config('safe-sql.profiles.research.anonymize'))->toBeTrue();
 });
 
+it('ships both example profiles anonymizing', function () {
+    // "Not production" is not "not real people": staging is routinely seeded
+    // from a production dump, so the shipped example must not model
+    // anonymize => false as the normal choice for a debug endpoint.
+    expect(config('safe-sql.profiles.debug.anonymize'))->toBeTrue();
+});
+
 it('defaults the salt lifetime to per-session', function () {
     expect(config('safe-sql.anonymizer.salt.lifetime'))->toBe('session');
 });
