@@ -11,8 +11,8 @@ You are connected to a live application database over a read-only interface.
   execute the statement. Plain `EXPLAIN` does not, so it is free — use it when
   you are unsure whether a filter is indexed.
 
-A refused query returns an error explaining why. That is a guardrail doing its
-job, not a transient fault: rewrite the query rather than retrying it.
+A refused query returns an error explaining why — a guardrail doing its job,
+not a transient fault. Rewrite the query rather than retrying it.
 
 ## Working within the limits
 
@@ -27,8 +27,7 @@ job, not a transient fault: rewrite the query rather than retrying it.
 ## Finding your way around
 
 - Read the schema resource first. It describes the main tables with their
-  columns, types and foreign keys, which is usually enough to write a correct
-  join without further calls.
-- Use `describe-table` for anything the schema resource lists by name only.
-- Prefer one focused query per question over a single query that tries to
-  answer everything.
+  columns, types and foreign keys — usually enough to write a correct join
+  without further calls.
+- Use `describe-table` for anything it lists by name only.
+- Prefer one focused query per question over one that answers everything.

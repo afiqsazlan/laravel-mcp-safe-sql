@@ -83,6 +83,34 @@ Route::middleware(['auth:oauth', 'scope:mcp:use', 'can:access-research'])
 The package enforces read-only SQL and pseudonymization. It does not decide
 who may connect — that stays your application's job.
 
+### Telling two endpoints apart
+
+Give every profile a `label`:
+
+```php
+'research' => ['label' => 'production', 'anonymize' => true,  ...],
+'debug'    => ['label' => 'staging',    'anonymize' => false, ...],
+```
+
+A client connected to both sees the same tool names under each server, and
+picks between them mostly on wording. Choosing wrong is not symmetric: a
+question about real usage answered from staging returns a plausible number
+that is simply false, and nothing in the result looks wrong.
+
+The label therefore appears in three places the model actually reads — the
+tool descriptions, the server instructions, and a `source` field on every
+result:
+
+```json
+{ "source": "production (values pseudonymized)", "profile": "research", "rowCount": 128, ... }
+```
+
+The instructions tell the agent to ask which environment a question is about
+when it could be either, to name the database it used, and never to combine
+rows or carry a pseudonym across servers.
+
+If you would rather not rely on any of that, connect one server at a time.
+
 ### Use one endpoint per sensitivity tier
 
 Give each profile its own endpoint rather than merging them. Anonymized

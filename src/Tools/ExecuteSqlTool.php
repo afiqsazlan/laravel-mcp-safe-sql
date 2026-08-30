@@ -25,7 +25,11 @@ class ExecuteSqlTool extends Tool
 
     public function description(): string
     {
-        return $this->profile->describes('sql') ?? <<<'MARKDOWN'
+        if (($custom = $this->profile->describes('sql')) !== null) {
+            return $custom;
+        }
+
+        return 'Runs against: '.$this->profile->sourceDescription()."\n\n".<<<'MARKDOWN'
         Run a read-only SQL query against the application database.
 
         Only SELECT, WITH and plain EXPLAIN are accepted. Anything that writes,
@@ -63,6 +67,10 @@ class ExecuteSqlTool extends Tool
         $rows = array_slice($result->rows, 0, $cap);
 
         return Response::json([
+            // Stated on every response so a query answered by the wrong server
+            // is visible rather than silently plausible.
+            'source' => $this->profile->sourceDescription(),
+            'profile' => $this->profile->name,
             'rowCount' => $result->rowCount,
             'showing' => count($rows),
             'truncated' => $result->rowCount > count($rows),

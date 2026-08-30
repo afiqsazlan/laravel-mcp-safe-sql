@@ -40,6 +40,12 @@ return [
     'profiles' => [
 
         'research' => [
+            // Names the database in tool descriptions, tool responses and
+            // instructions. When a client is connected to more than one of
+            // these servers, this is most of what the model has to tell them
+            // apart — so name the environment, not the use case.
+            'label' => 'production',
+
             // Connection name from config/database.php. Null uses the app default.
             // Point this at a read replica whenever one is available.
             'connection' => env('SAFE_SQL_RESEARCH_CONNECTION'),
@@ -58,6 +64,8 @@ return [
         ],
 
         'debug' => [
+            'label' => 'staging',
+
             'connection' => env('SAFE_SQL_DEBUG_CONNECTION'),
 
             // Still true, even for a non-production endpoint. Staging is

@@ -39,7 +39,11 @@ class TelescopeTool extends Tool
 
     public function description(): string
     {
-        return $this->profile->describes('telescope') ?? <<<'MARKDOWN'
+        if (($custom = $this->profile->describes('telescope')) !== null) {
+            return $custom;
+        }
+
+        return 'Runs against: '.$this->profile->sourceDescription()."\n\n".<<<'MARKDOWN'
         Read a Telescope request batch and return a compact digest.
 
         Paste the uuid from a Telescope URL (…/telescope/requests/<uuid>) and this

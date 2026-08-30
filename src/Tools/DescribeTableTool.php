@@ -38,7 +38,8 @@ class DescribeTableTool extends Tool
     public function description(): string
     {
         return $this->profile->describes('schema')
-            ?? 'List the tables in the database, or describe one table\'s columns, types and keys.';
+            ?? 'Runs against: '.$this->profile->sourceDescription()
+              .'. List the tables in the database, or describe one table\'s columns, types and keys.';
     }
 
     public function handle(Request $request, DatabaseManager $database): Response

@@ -26,7 +26,13 @@ class InstructionComposer
 {
     public function compose(Profile $profile): string
     {
-        $parts = [$this->fragment('core')];
+        $parts = [
+            $this->fragment('core'),
+            // Always included. When two of these servers are connected the
+            // model picks between identical tool names, and a question about
+            // real usage answered from staging produces a plausible falsehood.
+            str_replace('{{ source }}', $profile->sourceDescription(), $this->fragment('source')),
+        ];
 
         if ($profile->anonymize) {
             $parts[] = $this->fragment('pseudonymization');
