@@ -88,3 +88,12 @@ it('warns when Passport is absent, and offers the local transport instead', func
         ->expectsOutputToContain('Mcp::local')
         ->assertSuccessful();
 });
+
+it('tells the user that authorization is theirs to define', function () {
+    // "It has OAuth" is the most likely wrong conclusion someone draws here:
+    // OAuth establishes identity and says nothing about permission.
+    $this->artisan('safe-sql:install --profile=research --connection=testing')
+        ->expectsOutputToContain('can:access-research')
+        ->expectsOutputToContain('the gate says whether they may')
+        ->assertSuccessful();
+});

@@ -76,3 +76,22 @@ describe('published stubs', function () {
             ->token_endpoint->toBe(url('/oauth/token'));
     });
 });
+
+describe('the published route stub', function () {
+    it('shows how to restrict access, where the decision is actually made', function () {
+        $stub = (string) file_get_contents(__DIR__.'/../../routes/safe-sql.php');
+
+        expect($stub)
+            ->toContain('OAuth authenticates; your middleware authorizes')
+            ->toContain('permission:access-research')
+            ->toContain('in_array($user->id')
+            ->toContain('$user->tokens()->delete()');
+    });
+
+    it('states the limit of that authorization', function () {
+        // Someone will assume per-endpoint gating extends to per-row filtering.
+        expect((string) file_get_contents(__DIR__.'/../../routes/safe-sql.php'))
+            ->toContain('cannot do: restrict which *rows* a user sees')
+            ->toContain('GRANT SELECT');
+    });
+});

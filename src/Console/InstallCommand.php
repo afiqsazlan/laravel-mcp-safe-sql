@@ -160,8 +160,12 @@ class InstallCommand extends Command
         $this->line('       <fg=cyan>use Afiqsazlan\\SafeSql\\Http\\OAuthRoutes;</>');
         $this->newLine();
         $this->line('       <fg=cyan>OAuthRoutes::register();</>');
-        $this->line("       <fg=cyan>Route::middleware(['auth:oauth', 'scope:mcp:use'])</>");
+        $this->line("       <fg=cyan>Route::middleware(['auth:oauth', 'scope:mcp:use', 'can:access-{$profile}'])</>");
         $this->line("       <fg=cyan>    ->group(fn () => Mcp::web('mcp/{$profile}', {$server}::class));</>");
+        $this->newLine();
+        $this->line('     OAuth says who someone is; the gate says whether they may.');
+        $this->line("     Define <fg=cyan>access-{$profile}</> as a Gate, a spatie permission, or an");
+        $this->line('     explicit allowlist of user ids while you decide.');
         $this->newLine();
 
         $this->line('  <fg=gray>2.</> Classify your columns, or most of them come back as tokens:');

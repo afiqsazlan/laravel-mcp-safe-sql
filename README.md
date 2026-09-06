@@ -313,11 +313,23 @@ Route::middleware(['auth:oauth', 'scope:mcp:use', 'can:access-research'])
     ->group(fn () => Mcp::web('mcp/research', ResearchServer::class));
 ```
 
+Pick whichever matches how your app already works:
+
 ```php
+// A gate — nothing extra needed
 Gate::define('access-research', fn (User $user) => $user->hasRole('analyst'));
-// or, with spatie/laravel-permission, swap the middleware for
-// 'permission:access-research'
+
+// An explicit allowlist, while you are still deciding who should have it
+Gate::define('access-research', fn (User $user) => in_array($user->id, [1, 5], true));
 ```
+
+```php
+// spatie/laravel-permission — swap the middleware instead
+->middleware(['auth:oauth', 'scope:mcp:use', 'permission:access-research'])
+```
+
+To cut one person off, `$user->tokens()->delete()`. To cut everyone off,
+revoke the OAuth client.
 
 Because Dynamic Client Registration is off, nobody can self-provision a client
 either — every client is one you created with `passport:client`, and revoking

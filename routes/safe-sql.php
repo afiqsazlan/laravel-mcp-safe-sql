@@ -43,8 +43,39 @@ OAuthRoutes::register();
 | effect. Server instructions also stay resident for the whole session, so a
 | merged endpoint makes every conversation pay for both instruction sets.
 |
-| The middleware is yours: the package enforces read-only SQL and
-| pseudonymization, it does not decide who may connect.
+|--------------------------------------------------------------------------
+| Deciding who may connect
+|--------------------------------------------------------------------------
+|
+| OAuth authenticates; your middleware authorizes. Someone adding this server
+| in their client is sent here to log in as themselves and approve the
+| "mcp:use" scope, so every request arrives as a real authenticated user. What
+| they may then do is an ordinary Laravel authorization question.
+|
+| Pick whichever of these matches how your app already works:
+|
+|   // A gate — no extra packages needed
+|   Gate::define('access-research', fn (User $user) => $user->hasRole('analyst'));
+|   ->middleware(['auth:oauth', 'scope:mcp:use', 'can:access-research'])
+|
+|   // spatie/laravel-permission
+|   ->middleware(['auth:oauth', 'scope:mcp:use', 'permission:access-research'])
+|
+|   // An explicit allowlist, while you are still deciding
+|   Gate::define('access-research', fn (User $user) => in_array($user->id, [1, 5], true));
+|
+| To cut someone off: revoke their tokens with $user->tokens()->delete(). To
+| cut everyone off, revoke the OAuth client — and because dynamic client
+| registration is disabled above, nobody can mint a replacement.
+|
+| What this cannot do: restrict which *rows* a user sees. Authorization here is
+| all-or-nothing per endpoint. If different people should see different rows,
+| give them separate profiles reading connections with different grants, or
+| point a profile at a database view that already filters.
+|
+| The last line of defence is not here at all — it is GRANT SELECT on the
+| database user this profile connects as. Anything that user can read, an
+| authorized person can ask about.
 */
 Route::middleware(['auth:oauth', 'scope:mcp:use', 'can:access-research'])
     ->group(function () {
