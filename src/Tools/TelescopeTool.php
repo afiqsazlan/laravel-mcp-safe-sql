@@ -6,6 +6,7 @@ namespace Afiqsazlan\SafeSql\Tools;
 
 use Afiqsazlan\SafeSql\Anonymization\AnonymizerFactory;
 use Afiqsazlan\SafeSql\Contracts\Anonymizer;
+use Afiqsazlan\SafeSql\Events\TelescopeBatchRead;
 use Afiqsazlan\SafeSql\Profiles\Profile;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Database\DatabaseManager;
@@ -111,6 +112,17 @@ class TelescopeTool extends Tool
             $include,
             $anonymizers->make($this->profile, $request->sessionId()),
         );
+
+        $user = $request->user();
+
+        event(new TelescopeBatchRead(
+            profile: $this->profile,
+            batchId: (string) $batchId,
+            include: array_values($include),
+            entryCount: count($entries),
+            userId: $user === null ? null : (string) $user->getAuthIdentifier(),
+            sessionId: $request->sessionId(),
+        ));
 
         return Response::text((string) json_encode(
             $digest,

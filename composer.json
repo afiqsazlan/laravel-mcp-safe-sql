@@ -1,6 +1,6 @@
 {
     "name": "afiqsazlan/laravel-mcp-safe-sql",
-    "description": "Read-only, de-identified MCP access to your Laravel app's database — SELECT-only enforcement, auto-LIMIT, statement timeouts, fail-closed PII pseudonymization, and a context-cheap Telescope digest.",
+    "description": "Read-only, de-identified MCP access to your Laravel app's database \u2014 SELECT-only enforcement, auto-LIMIT, statement timeouts, fail-closed PII pseudonymization, and a context-cheap Telescope digest.",
     "keywords": [
         "laravel",
         "mcp",
@@ -52,7 +52,7 @@
         "test:coverage": "vendor/bin/pest --coverage",
         "lint": "vendor/bin/pint",
         "lint:check": "vendor/bin/pint --test",
-        "analyse": "vendor/bin/phpstan analyse"
+        "analyse": "vendor/bin/phpstan analyse --memory-limit=512M"
     },
     "config": {
         "sort-packages": true,

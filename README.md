@@ -297,6 +297,70 @@ php artisan passport:client --public --name="Claude"
 
 Use `Mcp::oauthRoutes()` instead if you actually want open registration.
 
+## Who can use it
+
+The package enforces read-only SQL and pseudonymization. It does **not** decide
+who may connect — that stays your application's job, and it is ordinary Laravel
+authorization.
+
+OAuth authenticates; your gates authorize. A person adding the server in their
+client is redirected to your app, logs in **as themselves**, and approves the
+`mcp:use` scope. Your app issues a token bound to that user, so every request
+resolves to a real `User` model:
+
+```php
+Route::middleware(['auth:oauth', 'scope:mcp:use', 'can:access-research'])
+    ->group(fn () => Mcp::web('mcp/research', ResearchServer::class));
+```
+
+```php
+Gate::define('access-research', fn (User $user) => $user->hasRole('analyst'));
+// or, with spatie/laravel-permission, swap the middleware for
+// 'permission:access-research'
+```
+
+Because Dynamic Client Registration is off, nobody can self-provision a client
+either — every client is one you created with `passport:client`, and revoking
+it invalidates every token issued through it.
+
+The last line is database grants. Anything the connection can read, an
+authorized user can ask about, so `GRANT SELECT` only the tables that should
+be queryable. `excluded_tables` affects the schema digest, not access.
+
+There is no per-user or per-row restriction: profile-level is the finest
+granularity. If different people should see different rows, give them separate
+profiles on connections with different grants, or point a profile at a view.
+
+## Audit
+
+Every read emits an event. The package does not decide where audit records
+live; it makes sure there is something to record.
+
+| Event | When |
+|---|---|
+| `QueryExecuted` | a query ran — profile, SQL, row count, duration, user, session |
+| `QueryRejected` | a query was refused — includes the reason |
+| `TelescopeBatchRead` | a batch was read — includes which heavy fields were pulled |
+
+```php
+Event::listen(QueryExecuted::class, function (QueryExecuted $event) {
+    Log::channel('audit')->info('safe-sql query', $event->context());
+});
+```
+
+**Events never carry result rows.** Recording what came back would write
+pseudonymized-for-a-reason data into logs that are retained longer and read
+more widely than the session was. Who, when, against what, and how much came
+back is the audit question.
+
+The submitted SQL *is* included, since an audit record that omits the query
+answers nothing. Those values were supplied by the person asking rather than
+extracted from the database — but if your logs are broadly readable, use
+`$event->redactedSql()`.
+
+`QueryRejected` is worth its own listener. One rejection is an agent writing
+clumsy SQL; a burst against one endpoint is worth a human looking at.
+
 ## Configuration
 
 | Key | Purpose |

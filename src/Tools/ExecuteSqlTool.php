@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Afiqsazlan\SafeSql\Tools;
 
+use Afiqsazlan\SafeSql\Events\QueryExecuted;
+use Afiqsazlan\SafeSql\Events\QueryRejected;
 use Afiqsazlan\SafeSql\Profiles\Profile;
 use Afiqsazlan\SafeSql\Sql\QueryExecutorFactory;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -55,13 +57,35 @@ class ExecuteSqlTool extends Tool
             'query' => 'required|string',
         ]);
 
+        $userId = $this->userId($request);
+
         try {
             $result = $executors
                 ->make($this->profile, $request->sessionId())
                 ->execute($validated['query']);
         } catch (Throwable $e) {
+            // Refusals are audited separately. One is an agent writing clumsy
+            // SQL; a burst of them is worth a human looking at.
+            event(new QueryRejected(
+                profile: $this->profile,
+                sql: $validated['query'],
+                reason: $e->getMessage(),
+                userId: $userId,
+                sessionId: $request->sessionId(),
+            ));
+
             return Response::error($e->getMessage());
         }
+
+        event(new QueryExecuted(
+            profile: $this->profile,
+            sql: $validated['query'],
+            rowCount: $result->rowCount,
+            executionMs: $result->executionMs,
+            truncated: $result->truncated,
+            userId: $userId,
+            sessionId: $request->sessionId(),
+        ));
 
         $cap = (int) Config::get('safe-sql.limits.max_response_rows', 150);
         $rows = array_slice($result->rows, 0, $cap);
@@ -78,6 +102,18 @@ class ExecuteSqlTool extends Tool
             'columns' => $result->columns(),
             'rows' => $rows,
         ]);
+    }
+
+    /**
+     * The authenticated user behind the OAuth token, when there is one.
+     *
+     * Local stdio transport has no user, so this is null there.
+     */
+    protected function userId(Request $request): ?string
+    {
+        $user = $request->user();
+
+        return $user === null ? null : (string) $user->getAuthIdentifier();
     }
 
     /**

@@ -80,4 +80,4 @@ jobs:
         run: vendor/bin/pint --test
 
       - name: Static analysis
-        run: vendor/bin/phpstan analyse
+        run: vendor/bin/phpstan analyse --memory-limit=512M
