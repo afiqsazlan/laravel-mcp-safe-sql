@@ -5,7 +5,12 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\File;
 
 afterEach(function () {
+    // Everything the command writes lands in Testbench's shared app skeleton,
+    // which outlives the test. A published config/safe-sql.php left behind
+    // there silently overrides the package config for every later test.
     File::deleteDirectory(app_path('Mcp'));
+    File::delete(config_path('safe-sql.php'));
+    File::delete(base_path('routes/safe-sql.php'));
 });
 
 it('scaffolds a server class for the profile', function () {
