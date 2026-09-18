@@ -192,12 +192,21 @@ Tokens are `[type:hash]`, where the hash is keyed by a salt.
 
 | `salt.lifetime` | Same value → same token | Use when |
 |---|---|---|
-| `session` (default) | within one MCP session | Normal. Multi-query analysis works; tokens die with the session. |
+| `user` (default) | for one user, within one window | Normal. An analyst's queries correlate all day; two analysts see different tokens for the same person, so they cannot pool what each was shown. |
 | `request` | within one tool call | Maximum privacy, and cross-query correlation breaks silently. |
-| `config` | forever, across sessions and deploys | Long-running analysis. This is a durable pseudonym for a real person — treat the secret accordingly. |
+| `config` | for everyone, forever | Long-running shared analysis. A durable pseudonym for a real person — treat the secret accordingly. |
 
-Under HTTP transport each request is a separate PHP process, so session-stable
-tokens are *derived* from the MCP session id rather than held in memory.
+The window defaults to a day (`salt.window`: `hour`, `day`, `week`, `month`),
+bucketed in UTC so the rotation doesn't move with your server's timezone.
+
+Why the user rather than the conversation: `laravel/mcp` 1.0 made HTTP
+transport stateless, so there is no MCP session on the server to anchor to.
+Who is asking survives that; which conversation they are in does not. Over
+stdio there is no authenticated user, but there the process *is* the
+connection, so tokens are stable for as long as it runs.
+
+The agent is told all of this in its instructions — including that a token
+from yesterday, or one a colleague saw, is meaningless now.
 
 ### The ergonomic cost, up front
 
@@ -350,7 +359,7 @@ live; it makes sure there is something to record.
 
 | Event | When |
 |---|---|
-| `QueryExecuted` | a query ran — profile, SQL, row count, duration, user, session |
+| `QueryExecuted` | a query ran — profile, SQL, row count, duration, user |
 | `QueryRejected` | a query was refused — includes the reason |
 | `TelescopeBatchRead` | a batch was read — includes which heavy fields were pulled |
 
@@ -392,11 +401,11 @@ clumsy SQL; a burst against one endpoint is worth a human looking at.
 
 - PHP 8.2+
 - Laravel 12
-- `laravel/mcp` ^0.9
+- `laravel/mcp` ^1.0
 
-**`laravel/mcp` is pre-1.0, and that is this package's largest maintenance
-risk.** The constraint is deliberately tight. Expect a package release to be
-needed for each `laravel/mcp` minor bump.
+For `laravel/mcp` 0.9, use v0.1.0 of this package. The move to 1.0 removed MCP
+sessions from the server side, which changed how pseudonym stability works —
+see *Token stability* above.
 
 MySQL is the primary target. Query validation is written against MySQL's
 grammar; schema introspection uses Laravel's driver-agnostic schema builder

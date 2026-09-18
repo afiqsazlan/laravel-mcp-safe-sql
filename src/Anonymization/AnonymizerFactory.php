@@ -7,17 +7,18 @@ namespace Afiqsazlan\SafeSql\Anonymization;
 use Afiqsazlan\SafeSql\Contracts\Anonymizer;
 use Afiqsazlan\SafeSql\Profiles\Profile;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Date;
 
 class AnonymizerFactory
 {
     /**
      * Build the anonymizer for one tool call.
      *
-     * The session id is threaded through from the MCP request rather than
-     * being read from somewhere ambient, because it is what makes tokens
-     * stable across the queries of a single conversation.
+     * The user id is threaded through from the MCP request rather than read
+     * from somewhere ambient, because with stateless transport it is what makes
+     * tokens stable across one analyst's queries.
      */
-    public function make(Profile $profile, ?string $sessionId = null): Anonymizer
+    public function make(Profile $profile, ?string $userId = null): Anonymizer
     {
         if (! $profile->anonymize) {
             return new NullAnonymizer;
@@ -30,11 +31,19 @@ class AnonymizerFactory
         $salt = $config['salt'] ?? [];
 
         $provider = new SaltProvider(
-            lifetime: (string) ($salt['lifetime'] ?? SaltProvider::LIFETIME_SESSION),
-            // Falls back to the application key so that session-scoped salts
-            // are keyed to something secret without extra configuration.
+            lifetime: (string) ($salt['lifetime'] ?? SaltProvider::LIFETIME_USER),
+            // Falls back to the application key so that user-scoped salts are
+            // keyed to something secret without extra configuration.
             secret: $salt['secret'] ?? Config::get('app.key'),
-            sessionId: $sessionId,
+            userId: $userId,
+            window: (string) ($salt['window'] ?? 'day'),
+            // stdio runs one long-lived console process per connection, so
+            // there the process is the session. HTTP workers serve many
+            // callers and must never share an anonymous salt.
+            processIsSession: app()->runningInConsole(),
+            // Laravel's clock rather than PHP's, so the window boundary moves
+            // with travelTo() in tests and with any app-level clock override.
+            now: Date::now(),
         );
 
         return new PiiAnonymizer(

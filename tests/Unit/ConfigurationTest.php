@@ -19,8 +19,9 @@ it('ships both example profiles anonymizing', function () {
     expect(config('safe-sql.profiles.debug.anonymize'))->toBeTrue();
 });
 
-it('defaults the salt lifetime to per-session', function () {
-    expect(config('safe-sql.anonymizer.salt.lifetime'))->toBe('session');
+it('defaults the salt lifetime to per-user, per-day', function () {
+    expect(config('safe-sql.anonymizer.salt.lifetime'))->toBe('user')
+        ->and(config('safe-sql.anonymizer.salt.window'))->toBe('day');
 });
 
 it('excludes framework and oauth tables from the schema digest', function () {

@@ -61,7 +61,7 @@ class ExecuteSqlTool extends Tool
 
         try {
             $result = $executors
-                ->make($this->profile, $request->sessionId())
+                ->make($this->profile, $userId)
                 ->execute($validated['query']);
         } catch (Throwable $e) {
             // Refusals are audited separately. One is an agent writing clumsy
@@ -71,7 +71,6 @@ class ExecuteSqlTool extends Tool
                 sql: $validated['query'],
                 reason: $e->getMessage(),
                 userId: $userId,
-                sessionId: $request->sessionId(),
             ));
 
             return Response::error($e->getMessage());
@@ -84,7 +83,6 @@ class ExecuteSqlTool extends Tool
             executionMs: $result->executionMs,
             truncated: $result->truncated,
             userId: $userId,
-            sessionId: $request->sessionId(),
         ));
 
         $cap = (int) Config::get('safe-sql.limits.max_response_rows', 150);

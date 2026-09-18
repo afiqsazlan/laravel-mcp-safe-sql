@@ -51,8 +51,10 @@ describe('pseudonymization rules', function () {
         expect(composed(['anonymize' => true]))->toContain('Aggregates are exact');
     });
 
-    it('states that tokens do not correlate across sessions', function () {
-        expect(composed(['anonymize' => true]))->toContain('cannot compare across sessions');
+    it('states that tokens do not correlate across days or people', function () {
+        expect(prose(['anonymize' => true]))
+            ->toContain('cannot compare across days or people')
+            ->toContain('scoped to the person asking and the current day');
     });
 
     it('explains that [value:…] means unclassified, not sensitive', function () {

@@ -16,7 +16,7 @@ class QueryExecutorFactory
         protected AnonymizerFactory $anonymizers,
     ) {}
 
-    public function make(Profile $profile, ?string $sessionId = null): QueryExecutor
+    public function make(Profile $profile, ?string $userId = null): QueryExecutor
     {
         /** @var array<string, int> $limits */
         $limits = Config::get('safe-sql.limits', []);
@@ -24,7 +24,7 @@ class QueryExecutorFactory
         return new QueryExecutor(
             connection: $this->database->connection($profile->connection),
             validator: new QueryValidator,
-            anonymizer: $this->anonymizers->make($profile, $sessionId),
+            anonymizer: $this->anonymizers->make($profile, $userId),
             limits: $limits,
         );
     }

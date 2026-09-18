@@ -30,7 +30,6 @@ class QueryExecuted
         public readonly int $executionMs,
         public readonly bool $truncated,
         public readonly ?string $userId = null,
-        public readonly ?string $sessionId = null,
     ) {}
 
     /**
@@ -40,7 +39,7 @@ class QueryExecuted
     public function redactedSql(): string
     {
         return app(AnonymizerFactory::class)
-            ->make($this->profile, $this->sessionId)
+            ->make($this->profile, $this->userId)
             ->redactText($this->sql);
     }
 
@@ -55,7 +54,6 @@ class QueryExecuted
             'connection' => $this->profile->connection,
             'anonymized' => $this->profile->anonymize,
             'user_id' => $this->userId,
-            'session_id' => $this->sessionId,
             'row_count' => $this->rowCount,
             'execution_ms' => $this->executionMs,
             'truncated' => $this->truncated,

@@ -12,10 +12,10 @@ The prefix is the kind of value detected. The suffix is a keyed hash of it.
 
 ## What you can rely on
 
-- **Equal tokens mean equal underlying values.** Within one session,
+- **Equal tokens mean equal underlying values.** For you, today,
   `[email:51e84a2b]` is the same address every time it appears, including
-  across separate queries and across different column labels. You can join,
-  group and deduplicate on tokens.
+  across separate queries and column labels. You can join, group and
+  deduplicate on tokens.
 - **Different tokens mean different values.**
 - **Aggregates are exact.** `COUNT`, `SUM`, `AVG`, `COUNT(DISTINCT email)` are
   computed by the database before pseudonymization, so the numbers are real
@@ -31,10 +31,9 @@ The prefix is the kind of value detected. The suffix is a keyed hash of it.
 - **You cannot filter by one.** `WHERE email = '[email:51e84a2b]'` matches
   nothing — the database stores the real value, not the token. Filter on
   non-identifying columns, or on the real value if the user supplied it.
-- **You cannot compare across sessions.** Tokens are session-scoped by
-  default. A token from an earlier conversation is meaningless now, so never
-  carry one across and never treat two tokens from different sessions as the
-  same person.
+- **You cannot compare across days or people.** Tokens are scoped to the
+  person asking and the current day (UTC) by default. A token from an earlier
+  day, or one a colleague saw, is meaningless now — never carry one across.
 
 ## Reading `[value:…]` correctly
 

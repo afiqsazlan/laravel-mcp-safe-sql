@@ -25,7 +25,6 @@ class TelescopeBatchRead
         public readonly array $include,
         public readonly int $entryCount,
         public readonly ?string $userId = null,
-        public readonly ?string $sessionId = null,
     ) {}
 
     /**
@@ -50,7 +49,6 @@ class TelescopeBatchRead
             'heavy_fields' => $this->includedHeavyFields(),
             'entry_count' => $this->entryCount,
             'user_id' => $this->userId,
-            'session_id' => $this->sessionId,
         ];
     }
 }

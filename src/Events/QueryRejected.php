@@ -20,7 +20,6 @@ class QueryRejected
         public readonly string $sql,
         public readonly string $reason,
         public readonly ?string $userId = null,
-        public readonly ?string $sessionId = null,
     ) {}
 
     /**
@@ -33,7 +32,6 @@ class QueryRejected
             'source' => $this->profile->sourceDescription(),
             'connection' => $this->profile->connection,
             'user_id' => $this->userId,
-            'session_id' => $this->sessionId,
             'reason' => $this->reason,
         ];
     }

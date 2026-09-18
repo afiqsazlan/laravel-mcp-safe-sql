@@ -106,22 +106,22 @@ class TelescopeTool extends Tool
             return Response::error("No Telescope entries found for batch {$batchId}.");
         }
 
+        $user = $request->user();
+        $userId = $user === null ? null : (string) $user->getAuthIdentifier();
+
         $digest = $this->digest(
             (string) $batchId,
             $entries,
             $include,
-            $anonymizers->make($this->profile, $request->sessionId()),
+            $anonymizers->make($this->profile, $userId),
         );
-
-        $user = $request->user();
 
         event(new TelescopeBatchRead(
             profile: $this->profile,
             batchId: (string) $batchId,
             include: array_values($include),
             entryCount: count($entries),
-            userId: $user === null ? null : (string) $user->getAuthIdentifier(),
-            sessionId: $request->sessionId(),
+            userId: $userId,
         ));
 
         return Response::text((string) json_encode(

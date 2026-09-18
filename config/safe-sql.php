@@ -133,18 +133,29 @@ return [
         | Salt lifetime controls whether a given input pseudonymizes to the
         | same token across queries.
         |
-        |   "session" — stable within one MCP session (default). Multi-query
-        |               analysis can follow one subject; tokens are meaningless
-        |               once the session ends.
+        |   "user"    — stable for one authenticated user within one time
+        |               window (default). An analyst's queries correlate all
+        |               day; two analysts see different tokens for the same
+        |               value, so they cannot pool what each was shown.
         |   "request" — fresh salt per tool call. Most private, but the same
         |               person hashes differently in every query, which silently
         |               breaks any cross-query correlation.
-        |   "config"  — derived from the secret below. Tokens are stable across
-        |               sessions and deploys, enabling long-running analysis at
-        |               the cost of being a durable pseudonym.
+        |   "config"  — derived from the secret below. Tokens are stable for
+        |               everyone, across days and deploys — a durable pseudonym
+        |               for a real person, so treat the secret accordingly.
+        |
+        | Why not "per conversation": Laravel MCP 1.0 made HTTP transport
+        | stateless, so there is no session to anchor to. Over stdio there is no
+        | authenticated user either, but there the process is the connection,
+        | so tokens are stable for as long as it runs.
+        |
+        | The window is "hour", "day", "week" or "month", bucketed in UTC so the
+        | rotation does not move with the server's timezone. "session" is still
+        | accepted and means "user", for configs published before 1.0.
         */
         'salt' => [
-            'lifetime' => env('SAFE_SQL_SALT_LIFETIME', 'session'),
+            'lifetime' => env('SAFE_SQL_SALT_LIFETIME', 'user'),
+            'window' => env('SAFE_SQL_SALT_WINDOW', 'day'),
             'secret' => env('SAFE_SQL_SALT_SECRET'),
         ],
 
